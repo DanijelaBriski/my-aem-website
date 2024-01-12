@@ -150,6 +150,7 @@ a.button:any-link, button {
   overflow: hidden;
   text-overflow: ellipsis;
   border-radius: 30px;
+  cursor: pointer;
 }
 
 a.button:hover, a.button:focus, button:hover, button:focus  {
@@ -198,7 +199,7 @@ main .section {
 
 @media (width >= 900px) {
   .section > div {
-    max-width: 1200px;
+    max-width: 1400px;
     margin: auto;
   }
 }
