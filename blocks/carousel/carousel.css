@@ -1,0 +1,96 @@
+.carousel {
+	display: flex;
+	flex-wrap: nowrap;
+	overflow-x: auto;
+	scroll-snap-type: x mandatory;
+	transition: transform 0.5s ease-in-out;
+	scroll-behavior: smooth;
+	overflow: hidden;
+	position: relative;
+  max-height: 800px;
+  margin: 0 -10px;
+}
+
+.carousel > div {
+	flex: 0 0 100%;
+	scroll-snap-align: center;
+	height: 100%;
+}
+
+.carousel > div > div {
+	flex-shrink: 0;
+	scroll-snap-align: start;
+	position: relative;
+	align-items: flex-end;
+	color: var(--color-white);
+	width: 100%;
+	height: 100%;
+}
+
+.carousel > div > div > picture {
+	display: block;
+	width: 100%;
+	height: 100%;
+}
+
+.carousel > div > div > picture img {
+	display: block;
+	width: 100%;
+	height: 100%;
+  object-fit: cover;
+}
+
+.carousel > div:last-of-type {
+	margin-right: 0;
+}
+
+.carousel-wrapper:not(.carousel-single-slide) {
+	position: relative;
+	overflow: hidden;
+}
+
+.carousel-wrapper:not(.carousel-single-slide) .carousel > div {
+	padding: 0 10px;
+}
+
+.carousel-wrapper .arrow {
+	position: absolute;
+	top: 50%;
+	transform: translateY(-50%);
+	width: 40px;
+	height: 40px;
+	cursor: pointer;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+
+.carousel-wrapper .arrow svg {
+	width: 20px;
+	height: 20px;
+	fill: var(--background-color);
+}
+
+.carousel-wrapper .chevron-left {
+	left: 10px;
+}
+
+.carousel-wrapper .chevron-right {
+	right: 10px;
+}
+
+@media (min-width: 900px) {
+	.carousel-wrapper .arrow svg {
+		width: 50px;
+		height: 50px;
+	}
+}
+
+.button-icon {
+	margin: 0;
+	padding: 0;
+	border: unset;
+	border-radius: unset;
+	background-color: unset;
+	background: unset;
+}
