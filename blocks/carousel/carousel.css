@@ -8,13 +8,11 @@
 	overflow: hidden;
 	position: relative;
   max-height: 800px;
-  margin: 0 -10px;
 }
 
 .carousel > div {
 	flex: 0 0 100%;
 	scroll-snap-align: center;
-	height: 100%;
 }
 
 .carousel > div > div {
@@ -49,10 +47,6 @@
 	overflow: hidden;
 }
 
-.carousel-wrapper:not(.carousel-single-slide) .carousel > div {
-	padding: 0 10px;
-}
-
 .carousel-wrapper .arrow {
 	position: absolute;
 	top: 50%;
@@ -77,6 +71,10 @@
 
 .carousel-wrapper .chevron-right {
 	right: 10px;
+}
+
+.carousel-wrapper.carousel-single-slide .arrow {
+	display: none;
 }
 
 @media (min-width: 900px) {
