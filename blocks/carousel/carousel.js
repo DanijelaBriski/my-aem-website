@@ -62,7 +62,10 @@ function createCarousel() {
         .then((response) => response.text())
         .then((svgContent) => {
           rightArrow.innerHTML = svgContent;
-          rightArrow.addEventListener('click', slideToRight);
+          rightArrow.addEventListener('click', () => {
+            slideToRight();
+            clearCarouselInterval();
+          });
         });
 
       const intersectionCallback = (entries) => {
