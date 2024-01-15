@@ -6,9 +6,11 @@ import {
   decorateButtons,
   decorateIcons,
   decorateSections,
+  decorateBlock,
   decorateBlocks,
   decorateTemplateAndTheme,
   waitForLCP,
+  loadBlock,
   loadBlocks,
   loadCSS,
 } from './aem.js';
@@ -79,6 +81,7 @@ async function loadEager(doc) {
   const main = doc.querySelector('main');
   if (main) {
     decorateMain(main);
+    aggregateTabSectionsIntoComponents(main);
     document.body.classList.add('appear');
     await waitForLCP(LCP_BLOCKS);
   }
@@ -91,6 +94,92 @@ async function loadEager(doc) {
   } catch (e) {
     // do nothing
   }
+}
+// create object with tabs section as property and tabs content as key[]
+const tabElementMap = {};
+
+function calculateTabSectionCoordinate(lastTabBeginningIndex, targetTabSourceSection) {
+  if (!tabElementMap[lastTabBeginningIndex]) {
+    tabElementMap[lastTabBeginningIndex] = [];
+  }
+  tabElementMap[lastTabBeginningIndex].push(targetTabSourceSection);
+}
+
+function calculateTabSectionCoordinates(main) {
+  let lastTabIndex = -1;
+  let foldedTabsCounter = 0;
+  const mainSections = [...main.children];
+  main.querySelectorAll('div.section[data-tab-title]').forEach(section => {
+    const currentSectionIndex = mainSections.indexOf(section);
+
+    if (lastTabIndex < 0 || currentSectionIndex - foldedTabsCounter !== lastTabIndex) {
+      // we construct a new tabs component, at the currentSectionIndex
+      lastTabIndex = currentSectionIndex;
+      foldedTabsCounter = 0;
+    }
+
+    foldedTabsCounter += 1;
+    calculateTabSectionCoordinate(lastTabIndex, section);
+  });
+}
+
+async function autoBlockTabComponent(main, targetIndex, tabSections) {
+  const section = document.createElement('div');
+  section.setAttribute('class', 'section');
+  section.setAttribute('style', 'display:none');
+  section.dataset.sectionStatus = 'loading';
+  const tabsBlock = document.createElement('div');
+  tabsBlock.setAttribute('class', 'tabs');
+
+  const tabContentsWrapper = document.createElement('div');
+  tabContentsWrapper.setAttribute('class', 'contents-wrapper');
+
+  tabsBlock.appendChild(tabContentsWrapper);
+
+  if (
+    main.children[targetIndex].previousElementSibling.children.length === 1 &&
+    main.children[targetIndex].previousElementSibling.children[0].classList.contains(
+      'default-content-wrapper'
+    )
+  ) {
+    const tabsMainText = main.children[targetIndex].previousElementSibling.children[0].cloneNode(true);
+    tabsMainText.classList.add('tabs-main-text');
+    section.append(tabsMainText);
+  }
+
+  tabSections.forEach(tabSection => {
+    tabSection.classList.remove('section');
+    tabSection.classList.add('contents');
+    // remove display: none
+    tabContentsWrapper.appendChild(tabSection);
+    tabSection.style.display = null;
+  });
+  main.insertBefore(section, main.children[targetIndex]);
+  section.append(tabsBlock);
+  decorateBlock(tabsBlock);
+  await loadBlock(tabsBlock);
+
+  if (
+    main.children[targetIndex].previousElementSibling.children.length === 1 &&
+    main.children[targetIndex].previousElementSibling.children[0].classList.contains(
+      'default-content-wrapper'
+    )
+  ) {
+    main.children[targetIndex].previousElementSibling.remove();
+  }
+
+  section.style.display = null;
+}
+
+function aggregateTabSectionsIntoComponents(main) {
+  calculateTabSectionCoordinates(main);
+
+  let sectionIndexDelta = 0;
+  Object.keys(tabElementMap).map(async tabComponentIndex => {
+    const tabSections = tabElementMap[tabComponentIndex];
+    await autoBlockTabComponent(main, tabComponentIndex - sectionIndexDelta, tabSections);
+    sectionIndexDelta = tabSections.length - 1;
+  });
 }
 
 /**
