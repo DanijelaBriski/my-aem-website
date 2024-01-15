@@ -70,7 +70,7 @@ function createCarousel() {
 
       const intersectionCallback = (entries) => {
         entries.forEach((entry) => {
-          if (entry.intersectionRatio > 0 && entry.intersectionRatio <= 1) {
+          if (entry.intersectionRatio === 1) {
             clearCarouselInterval();
             setCarouselInterval();
             carouselWrapper.addEventListener('pointerenter', clearCarouselInterval);
@@ -83,7 +83,7 @@ function createCarousel() {
         });
       };
 
-      const observer = new IntersectionObserver(intersectionCallback, { threshold: [0, 1] });
+      const observer = new IntersectionObserver(intersectionCallback, { threshold: [1] });
       observer.observe(carouselWrapper);
 
       carouselWrapper.appendChild(leftArrow);
